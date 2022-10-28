@@ -1,0 +1,26 @@
+配置KVM桥接网络（NAT模式转换为bridge模式）
+（KVM虚拟机为桥接模式，在KVM下创建一台centos模板机，以模板机复制多台虚拟机）
+
+1. 在KVM下配置桥接网络配置文件
+  以ens33为模板复制并配置br1
+TYPE="Bridge"
+……
+NAME="br1"
+DEVICE="br1"
+ONBOOT="yes"
+~     
+2. 在ens33下写入BRIDGE=br1 （将ens33上的网线 搭在br1上）
+    再刷新网络
+
+3.#brctl show 查看网卡连接信息
+   #brctl delif virbr0 vnet0   vnet0上的网线从virbr0（NAT模式的虚拟交换机）拔下来
+   #brctl addif br1 vnet0      将网线插入到桥接模式的虚拟交换机上
+
+4.启动vnet0对应的虚拟机
+5.外网ping虚拟机进行测试 
+
+
+
+转换虚拟机硬盘格式
+（进行格式转换前需要关闭虚拟机电源  #virsh list --all 查看虚拟机运行状态）
+1. # qemu-img convert -f raw -O qcow2 centos7.raw centos7.qcow2   将raw格式转换为qcow2
